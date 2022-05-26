@@ -20,14 +20,20 @@ target_compile_options(
 target_link_options(
     "${PROJECT_NAME}-fuzzer"
     PUBLIC
-    -fsanitize=fuzzer -lSDL2main -lSDL2
+    -fsanitize=fuzzer
 )
-
-message(STATUS ${SDLSOUND_LIB_TARGET})
-message(STATUS ${OTHER_LDFLAGS})
 
 target_link_libraries(
     "${PROJECT_NAME}-fuzzer"
     PRIVATE
-    ${SDLSOUND_LIB_TARGET} ${OTHER_LDFLAGS}
+    SDL2_mixer
 )
+
+if (TARGET SDL2::SDL2main)
+    target_link_libraries("${PROJECT_NAME}-fuzzer" PRIVATE SDL2::SDL2main)
+endif()
+if (BUILD_SHARED_LIBS)
+    target_link_libraries("${PROJECT_NAME}-fuzzer" PRIVATE SDL2::SDL2)
+else()
+    target_link_libraries("${PROJECT_NAME}-fuzzer" PRIVATE SDL2::SDL2-static)
+endif()
