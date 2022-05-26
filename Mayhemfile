@@ -1,6 +1,6 @@
-image: ghcr.io/capuanob/sdl-sound-fuzz:latest
-project: sdlsound
-target: sdl-sound-fuzzer
+image: ghcr.io/capuanob/sdl-ttf-fuzz:latest
+project: sdlttf
+target: sdl-ttf-fuzzer
 tests:
   - file://fuzz/corpus
 
