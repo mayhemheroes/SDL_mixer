@@ -1,5 +1,5 @@
 image: ghcr.io/capuanob/sdl-mixer-fuzz:latest
-project: sdlmixer
+project: sdl-mixer
 target: sdl-mixer-fuzzer
 tests:
   - file://fuzz/corpus

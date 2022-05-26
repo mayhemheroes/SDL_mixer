@@ -50,7 +50,7 @@ jobs:
         uses: ForAllSecure/mcode-action@v1
         with:
           mayhem-token: ${{ secrets.MAYHEM_TOKEN }}
-          args: --project sdlmixer --image ${{ steps.meta.outputs.tags }} --duration 300
+          args: --project sdl-mixer --image ${{ steps.meta.outputs.tags }} --duration 300
           sarif-output: sarif
 
       - name: Upload SARIF file(s)
