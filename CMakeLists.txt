@@ -8,8 +8,17 @@ set(MINOR_VERSION 0)
 set(MICRO_VERSION 0)
 set(SDL_REQUIRED_VERSION 3.0.0)
 
+# For historical reasons this is 3.0.0 rather than the expected 1.0.0
+set(DYLIB_COMPATIBILITY_VERSION "3.0.0")
+
 include(PrivateSdlFunctions)
 sdl_calculate_derived_version_variables()
+
+option(INSTRUMENT "Instrument libraries and executables for libFuzzer fuzzing" OFF)
+option(BUILD_SHARED_LIBS "Enable shared library" ON)
+
+option(INSTRUMENT "Instrument libraries and executables for libFuzzer fuzzing" OFF)
+option(BUILD_SHARED_LIBS "Enable shared library" ON)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "Prevented in-tree built. Please create a build directory outside of the SDL_mixer source code and call cmake from there")
@@ -243,6 +252,18 @@ if(NOT ANDROID)
     set_target_properties(SDL3_mixer PROPERTIES
         DEBUG_POSTFIX "${SDL3MIXER_DEBUG_POSTFIX}"
     )
+endif()
+
+if (INSTRUMENT)
+    target_compile_options(SDL2_mixer PUBLIC -fsanitize=fuzzer-no-link)
+    target_link_options(SDL2_mixer PUBLIC -fsanitize=fuzzer-no-link)
+endif()
+
+if(BUILD_SHARED_LIBS)
+    if(WIN32 OR OS2)
+        set_target_properties(SDL2_mixer PROPERTIES PREFIX "")
+    endif()
+
     if(APPLE)
         # the SOVERSION property corresponds to the compatibility version and VERSION corresponds to the current version
         # https://cmake.org/cmake/help/latest/prop_tgt/SOVERSION.html#mach-o-versions
@@ -942,4 +963,14 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.17")
     set_target_properties(SDL3::mixer PROPERTIES
         DEPRECATION "Use SDL3_mixer::SDL3_mixer or SDL3_mixer::SDL3_mixer-static instead"
     )
+endif()
+
+if (INSTRUMENT)
+    add_subdirectory(fuzz)
+endif()
+
+if (BUILD_SHARED_LIBS)
+  target_link_libraries(SDL2_mixer PRIVATE SDL2::SDL2)
+else()
+  target_link_libraries(SDL2_mixer PRIVATE SDL2::SDL2-static)
 endif()
