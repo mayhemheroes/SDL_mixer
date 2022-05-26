@@ -1,0 +1,9 @@
+project: sdl-mixer
+target: sdl-mixer-fuzzer
+testsuite:
+  - file://fuzz/corpus
+
+cmds:
+  - cmd: /SDL2_mixer-fuzzer
+    max_length: 200000
+    libfuzzer: true
