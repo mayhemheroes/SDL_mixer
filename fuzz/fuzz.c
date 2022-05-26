@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 #include "SDL.h"
-#include "SDL_sound.h"
+#include "SDL_mixer.h"
 
 #define READ_BUFF_SIZE 4096
 bool lib_init = false;
@@ -27,7 +27,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     if (!src)
         return 0;
 
-    music = Mix_LoadMUS_RW(SDL_RWFromMem(src, SDL_TRUE);
+    music = Mix_LoadMUS_RW(src, SDL_TRUE);
 
     if (music) {
         // Try and get music type

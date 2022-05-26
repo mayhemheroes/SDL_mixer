@@ -241,8 +241,8 @@ if(NOT ANDROID)
     )
 =======
 if (INSTRUMENT)
-    target_compile_options(SDL2_mixer PRIVATE -fsanitize=fuzzer-no-link)
-    target_link_options(SDL2_mixer PRIVATE -fsanitize=fuzzer-no-link)
+    target_compile_options(SDL2_mixer PUBLIC -fsanitize=fuzzer-no-link)
+    target_link_options(SDL2_mixer PUBLIC -fsanitize=fuzzer-no-link)
 endif()
 
 if(BUILD_SHARED_LIBS)
@@ -926,6 +926,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.17")
 if (INSTRUMENT)
     add_subdirectory(fuzz)
 endif()
+
 if (BUILD_SHARED_LIBS)
   target_link_libraries(SDL2_mixer PRIVATE SDL2::SDL2)
 else()
