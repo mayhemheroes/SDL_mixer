@@ -1,0 +1,10 @@
+image: ghcr.io/capuanob/sdl-sound-fuzz:latest
+project: sdlsound
+target: sdl-sound-fuzzer
+tests:
+  - file://fuzz/corpus
+
+cmds:
+  - cmd: /SDL_sound-fuzzer -close_fd_mask=2
+    max_length: 200000
+    libfuzzer: true

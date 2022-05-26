@@ -21,6 +21,7 @@ option(SUPPORT_MP3_MPG123 "Support loading MP3 music via MPG123" OFF)
 option(SUPPORT_MOD_MODPLUG "Support loading MOD music via modplug" OFF)
 option(SUPPORT_MID_TIMIDITY "Support loading MIDI music via TiMidity" ON)
 
+option(INSTRUMENT "Instrument libraries and executables for libFuzzer fuzzing" OFF)
 option(BUILD_SHARED_LIBS "Enable shared library" ON)
 
 if (NOT (TARGET SDL2::SDL2 OR TARGET SDL2::SDL2-static))
@@ -174,6 +175,11 @@ if (SUPPORT_MID_TIMIDITY)
     target_compile_definitions(SDL2_mixer PRIVATE -DMUSIC_MID_TIMIDITY)
 endif()
 
+if (INSTRUMENT)
+    target_compile_options(SDL2_mixer PRIVATE -fsanitize=fuzzer-no-link)
+    target_link_options(SDL2_mixer PRIVATE -fsanitize=fuzzer-no-link)
+endif()
+
 if(BUILD_SHARED_LIBS)
     if(WIN32 OR OS2)
         set_target_properties(SDL2_mixer PROPERTIES PREFIX "")
@@ -201,6 +207,9 @@ endif()
 
 target_include_directories(SDL2_mixer PUBLIC include)
 
+if (INSTRUMENT)
+    add_subdirectory(fuzz)
+endif()
 if (BUILD_SHARED_LIBS)
   target_link_libraries(SDL2_mixer PRIVATE SDL2::SDL2)
 else()
