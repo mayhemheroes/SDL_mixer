@@ -14,6 +14,9 @@ set(DYLIB_COMPATIBILITY_VERSION "3.0.0")
 include(PrivateSdlFunctions)
 sdl_calculate_derived_version_variables()
 
+option(INSTRUMENT "Instrument libraries and executables for libFuzzer fuzzing" OFF)
+option(BUILD_SHARED_LIBS "Enable shared library" ON)
+
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "Prevented in-tree built. Please create a build directory outside of the SDL_mixer source code and call cmake from there")
 endif()
@@ -177,6 +180,7 @@ else()
     set(sdl2_target_name SDL2::SDL2-static)
 endif()
 
+<<<<<<< HEAD
 sdl_find_sdl2(${sdl2_target_name} ${SDL_REQUIRED_VERSION})
 
 set(BUILD_SHARED_LIBS ${SDL2MIXER_BUILD_SHARED_LIBS})
@@ -235,6 +239,17 @@ if(NOT ANDROID)
     set_target_properties(SDL2_mixer PROPERTIES
         DEBUG_POSTFIX "${SDL2MIXER_DEBUG_POSTFIX}"
     )
+=======
+if (INSTRUMENT)
+    target_compile_options(SDL2_mixer PRIVATE -fsanitize=fuzzer-no-link)
+    target_link_options(SDL2_mixer PRIVATE -fsanitize=fuzzer-no-link)
+endif()
+
+if(BUILD_SHARED_LIBS)
+    if(WIN32 OR OS2)
+        set_target_properties(SDL2_mixer PROPERTIES PREFIX "")
+    endif()
+>>>>>>> Corpus + Mayhem
     if(APPLE)
         # the SOVERSION property corresponds to the compatibility version and VERSION corresponds to the current version
         # https://cmake.org/cmake/help/latest/prop_tgt/SOVERSION.html#mach-o-versions
@@ -291,6 +306,7 @@ if(SDL2MIXER_BUILD_SHARED_LIBS)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
+<<<<<<< HEAD
 set(INSTALL_EXTRA_TARGETS)
 set(PC_LIBS)
 set(PC_REQUIRES)
@@ -906,4 +922,13 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.17")
     set_target_properties(SDL2::mixer PROPERTIES
         DEPRECATION "Use SDL2_mixer::SDL2_mixer or SDL2_mixer::SDL2_mixer-static instead"
     )
+=======
+if (INSTRUMENT)
+    add_subdirectory(fuzz)
+endif()
+if (BUILD_SHARED_LIBS)
+  target_link_libraries(SDL2_mixer PRIVATE SDL2::SDL2)
+else()
+  target_link_libraries(SDL2_mixer PRIVATE SDL2::SDL2-static)
+>>>>>>> Corpus + Mayhem
 endif()
