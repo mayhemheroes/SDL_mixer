@@ -1,10 +1,9 @@
-image: ghcr.io/capuanob/sdl-mixer-fuzz:latest
 project: sdl-mixer
 target: sdl-mixer-fuzzer
-tests:
+testsuite:
   - file://fuzz/corpus
 
 cmds:
-  - cmd: /SDL2_mixer-fuzzer -close_fd_mask=2
+  - cmd: /SDL2_mixer-fuzzer
     max_length: 200000
     libfuzzer: true
