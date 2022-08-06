@@ -238,7 +238,8 @@ if(NOT ANDROID)
     set_target_properties(SDL2_mixer PROPERTIES
         DEBUG_POSTFIX "${SDL2MIXER_DEBUG_POSTFIX}"
     )
-=======
+endif()
+
 if (INSTRUMENT)
     target_compile_options(SDL2_mixer PUBLIC -fsanitize=fuzzer-no-link)
     target_link_options(SDL2_mixer PUBLIC -fsanitize=fuzzer-no-link)
@@ -253,7 +254,7 @@ if(BUILD_SHARED_LIBS)
     if(WIN32 OR OS2)
         set_target_properties(SDL2_mixer PROPERTIES PREFIX "")
     endif()
->>>>>>> Corpus + Mayhem
+
     if(APPLE)
         # the SOVERSION property corresponds to the compatibility version and VERSION corresponds to the current version
         # https://cmake.org/cmake/help/latest/prop_tgt/SOVERSION.html#mach-o-versions
@@ -925,9 +926,6 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.17")
     set_target_properties(SDL2::mixer PROPERTIES
         DEPRECATION "Use SDL2_mixer::SDL2_mixer or SDL2_mixer::SDL2_mixer-static instead"
     )
-=======
-if (INSTRUMENT)
-    add_subdirectory(fuzz)
 endif()
 
 if (INSTRUMENT)
@@ -938,5 +936,4 @@ if (BUILD_SHARED_LIBS)
   target_link_libraries(SDL2_mixer PRIVATE SDL2::SDL2)
 else()
   target_link_libraries(SDL2_mixer PRIVATE SDL2::SDL2-static)
->>>>>>> Corpus + Mayhem
 endif()
