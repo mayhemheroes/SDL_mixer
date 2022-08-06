@@ -180,7 +180,6 @@ else()
     set(sdl2_target_name SDL2::SDL2-static)
 endif()
 
-<<<<<<< HEAD
 sdl_find_sdl2(${sdl2_target_name} ${SDL_REQUIRED_VERSION})
 
 set(BUILD_SHARED_LIBS ${SDL2MIXER_BUILD_SHARED_LIBS})
@@ -311,7 +310,6 @@ if(SDL2MIXER_BUILD_SHARED_LIBS)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-<<<<<<< HEAD
 set(INSTALL_EXTRA_TARGETS)
 set(PC_LIBS)
 set(PC_REQUIRES)
