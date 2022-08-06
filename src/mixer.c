@@ -326,7 +326,7 @@ static void SDLCALL
 mix_channels(void *udata, Uint8 *stream, int len)
 {
     Uint8 *mix_input;
-    int i, mixable, volume, master_vol;
+    int i, mixable, master_vol;
     Uint32 sdl_ticks;
 
     (void)udata;
@@ -337,8 +337,7 @@ mix_channels(void *udata, Uint8 *stream, int len)
     /* Mix the music (must be done before the channels are added) */
     mix_music(music_data, stream, len);
 
-    volume = Mix_MasterVolume(-1);
-    master_vol = volume;
+    master_vol = SDL_AtomicGet(&master_volume);
 
     /* Mix any playing channels... */
     sdl_ticks = SDL_GetTicks();
@@ -372,18 +371,18 @@ mix_channels(void *udata, Uint8 *stream, int len)
                 }
             }
             if (mix_channel[i].playing > 0) {
+                int volume = (master_vol * (mix_channel[i].volume * mix_channel[i].chunk->volume)) / (MIX_MAX_VOLUME * MIX_MAX_VOLUME);
                 int index = 0;
                 int remaining = len;
                 while (mix_channel[i].playing > 0 && index < len) {
                     remaining = len - index;
-                    volume = (master_vol * (mix_channel[i].volume * mix_channel[i].chunk->volume)) / (MIX_MAX_VOLUME * MIX_MAX_VOLUME);
                     mixable = mix_channel[i].playing;
                     if (mixable > remaining) {
                         mixable = remaining;
                     }
 
                     mix_input = Mix_DoEffects(i, mix_channel[i].samples, mixable);
-                    SDL_MixAudioFormat(stream+index,mix_input,mixer.format,mixable,volume);
+                    SDL_MixAudioFormat(stream+index, mix_input, mixer.format, mixable, volume);
                     if (mix_input != mix_channel[i].samples)
                         SDL_free(mix_input);
 
@@ -394,6 +393,9 @@ mix_channels(void *udata, Uint8 *stream, int len)
                     /* rcg06072001 Alert app if channel is done playing. */
                     if (!mix_channel[i].playing && !mix_channel[i].looping) {
                         _Mix_channel_done_playing(i);
+
+                        /* Update the volume after the application callback */
+                        volume = (master_vol * (mix_channel[i].volume * mix_channel[i].chunk->volume)) / (MIX_MAX_VOLUME * MIX_MAX_VOLUME);
                     }
                 }
 
@@ -633,7 +635,6 @@ static SDL_AudioSpec *Mix_LoadMusic_RW(SDL_RWops *src, int freesrc, SDL_AudioSpe
 
         /* These music interfaces are not safe to use while music is playing */
         if (interface->api == MIX_MUSIC_CMD ||
-             interface->api == MIX_MUSIC_MIKMOD ||
              interface->api == MIX_MUSIC_NATIVEMIDI) {
             continue;
         }
@@ -844,6 +845,12 @@ Mix_Chunk *Mix_LoadWAV_RW(SDL_RWops *src, int freesrc)
 
     return(chunk);
 }
+
+Mix_Chunk *Mix_LoadWAV(const char *file)
+{
+    return Mix_LoadWAV_RW(SDL_RWFromFile(file, "rb"), 1);
+}
+
 
 /* Load a wave file of the mixer format from a memory buffer */
 Mix_Chunk *Mix_QuickLoad_WAV(Uint8 *mem)
@@ -1070,6 +1077,11 @@ int Mix_PlayChannelTimed(int which, Mix_Chunk *chunk, int loops, int ticks)
     return(which);
 }
 
+int Mix_PlayChannel(int channel, Mix_Chunk *chunk, int loops)
+{
+    return Mix_PlayChannelTimed(channel, chunk, loops, -1);
+}
+
 /* Change the expiration delay for a channel */
 int Mix_ExpireChannel(int which, int ticks)
 {
@@ -1146,6 +1158,12 @@ int Mix_FadeInChannelTimed(int which, Mix_Chunk *chunk, int loops, int ms, int t
     /* Return the channel on which the sound is being played */
     return(which);
 }
+
+int Mix_FadeInChannel(int channel, Mix_Chunk *chunk, int loops, int ms)
+{
+    return Mix_FadeInChannelTimed(channel, chunk, loops, ms, -1);
+}
+
 
 /* Set volume of a particular channel */
 int Mix_Volume(int which, int volume)
@@ -1445,8 +1463,13 @@ int Mix_GroupCount(int tag)
 {
     int count = 0;
     int i;
+
+    if (tag == -1) {
+        return num_channels;  /* minor optimization; no need to go through the loop. */
+    }
+
     for(i=0; i < num_channels; i ++) {
-        if (mix_channel[i].tag==tag || tag==-1)
+        if (mix_channel[i].tag == tag)
             ++ count;
     }
     return(count);
