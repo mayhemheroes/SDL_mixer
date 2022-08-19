@@ -11,6 +11,9 @@ set(SDL_REQUIRED_VERSION 2.0.9)
 # For historical reasons this is 3.0.0 rather than the expected 1.0.0
 set(DYLIB_COMPATIBILITY_VERSION "3.0.0")
 
+include(PrivateSdlFunctions)
+sdl_calculate_derived_version_variables()
+
 option(INSTRUMENT "Instrument libraries and executables for libFuzzer fuzzing" OFF)
 option(BUILD_SHARED_LIBS "Enable shared library" ON)
 
@@ -238,6 +241,7 @@ if(NOT ANDROID)
     set_target_properties(SDL2_mixer PROPERTIES
         DEBUG_POSTFIX "${SDL2MIXER_DEBUG_POSTFIX}"
     )
+endif()
 
 if (INSTRUMENT)
     target_compile_options(SDL2_mixer PUBLIC -fsanitize=fuzzer-no-link)
