@@ -1,5 +1,5 @@
 # Build Stage
-FROM --platform=linux/amd64 ubuntu:20.04 as builder
+FROM --platform=linux/amd64 ubuntu:22.04 as builder
 
 ## Install build dependencies.
 RUN apt-get update && \
@@ -22,7 +22,7 @@ RUN CC=clang CFLAGS="-fPIE" cmake .. -DINSTRUMENT=1 -DSUPPORT_FLAC=1 -DSUPPORT_O
 RUN make -j$(nproc)
 
 ## Package Stage
-FROM --platform=linux/amd64 ubuntu:20.04
+FROM --platform=linux/amd64 ubuntu:22.04
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y libsdl2-2.0-0
 
