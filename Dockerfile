@@ -2,8 +2,11 @@
 FROM --platform=linux/amd64 ubuntu:22.04 as builder
 
 ## Install build dependencies.
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y clang git cmake make libsdl2-dev libogg-dev libmpg123-dev libopusfile-dev libflac-dev libxmp-dev
+RUN for i in 1 2 3 4 5; do \
+      apt-get update --fix-missing && \
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --fix-missing clang git cmake make libsdl2-dev libogg-dev libmpg123-dev libopusfile-dev libflac-dev libxmp-dev && break || \
+      { echo "Attempt $i failed, retrying..."; sleep 15; }; \
+    done
 
 ## Add source code to the build stage.
 WORKDIR /
@@ -23,8 +26,11 @@ RUN make -j$(nproc)
 
 ## Package Stage
 FROM --platform=linux/amd64 ubuntu:22.04
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y libsdl2-2.0-0
+RUN for i in 1 2 3 4 5; do \
+      apt-get update --fix-missing && \
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --fix-missing libsdl2-2.0-0 && break || \
+      { echo "Attempt $i failed, retrying..."; sleep 15; }; \
+    done
 
 # Does not accept these libraries from apt, must be copied over
 COPY --from=builder /SDL_mixer/build/fuzz/SDL2_mixer-fuzzer /SDL2_mixer-fuzzer
