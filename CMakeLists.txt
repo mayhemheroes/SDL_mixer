@@ -255,8 +255,8 @@ if(NOT ANDROID)
 endif()
 
 if (INSTRUMENT)
-    target_compile_options(SDL2_mixer PUBLIC -fsanitize=fuzzer-no-link)
-    target_link_options(SDL2_mixer PUBLIC -fsanitize=fuzzer-no-link)
+    target_compile_options(SDL3_mixer PUBLIC -fsanitize=fuzzer-no-link)
+    target_link_options(SDL3_mixer PUBLIC -fsanitize=fuzzer-no-link)
 endif()
 
 if(BUILD_SHARED_LIBS)

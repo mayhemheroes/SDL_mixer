@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 
 # Fuzzer
 add_executable(
@@ -26,14 +26,14 @@ target_link_options(
 target_link_libraries(
     "${PROJECT_NAME}-fuzzer"
     PRIVATE
-    SDL2_mixer
+    SDL3_mixer
 )
 
-if (TARGET SDL2::SDL2main)
-    target_link_libraries("${PROJECT_NAME}-fuzzer" PRIVATE SDL2::SDL2main)
+if (TARGET SDL3::SDL3main)
+    target_link_libraries("${PROJECT_NAME}-fuzzer" PRIVATE SDL3::SDL3main)
 endif()
 if (BUILD_SHARED_LIBS)
-    target_link_libraries("${PROJECT_NAME}-fuzzer" PRIVATE SDL2::SDL2)
+    target_link_libraries("${PROJECT_NAME}-fuzzer" PRIVATE SDL3::SDL3)
 else()
-    target_link_libraries("${PROJECT_NAME}-fuzzer" PRIVATE SDL2::SDL2-static)
+    target_link_libraries("${PROJECT_NAME}-fuzzer" PRIVATE SDL3::SDL3-static)
 endif()
