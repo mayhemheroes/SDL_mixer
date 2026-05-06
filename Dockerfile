@@ -14,7 +14,7 @@ RUN for i in 1 2 3 4 5; do \
 WORKDIR /build
 RUN git clone --depth=1 https://github.com/libsdl-org/SDL.git /build/SDL3
 WORKDIR /build/SDL3
-RUN cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DSDL_X11=OFF -DSDL_WAYLAND=OFF -DSDL_VIDEO=OFF -DSDL_RENDER=OFF -DSDL_AUDIO=ON && \
+RUN cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DSDL_X11=OFF -DSDL_WAYLAND=OFF -DSDL_OFFSCREEN=ON -DSDL_RENDER=OFF -DSDL_AUDIO=ON && \
     cmake --build build --parallel $(nproc) && \
     cmake --install build
 
