@@ -6,7 +6,7 @@ RUN for i in 1 2 3 4 5; do \
       apt-get update --fix-missing && \
       DEBIAN_FRONTEND=noninteractive apt-get install -y --fix-missing \
         clang git cmake make ninja-build pkg-config \
-        libogg-dev libmpg123-dev libopusfile-dev libflac-dev libxmp-dev && break || \
+        libogg-dev libmpg123-dev libopusfile-dev libflac-dev libxmp-dev libx11-dev && break || \
       { echo "Attempt $i failed, retrying..."; sleep 15; }; \
     done
 
